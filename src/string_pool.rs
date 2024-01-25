@@ -5,12 +5,18 @@ use std::borrow::Borrow;
 use std::{
     cell::{Cell, RefCell},
     cmp::max,
-    collections::{hash_set::HashSet, LinkedList},
+    collections::LinkedList,
     default::Default,
-    fmt, hash, mem,
+    fmt, hash,
+    hash::BuildHasherDefault,
+    mem,
     ops::Deref,
     ptr, slice, str,
 };
+
+use seahash::SeaHasher;
+
+type HashSet<T> = std::collections::hash_set::HashSet<T, BuildHasherDefault<SeaHasher>>;
 
 struct Chunk {
     start: *mut u8,

@@ -16,19 +16,17 @@
 
 #[allow(unused, deprecated)] // rust-lang/rust#46510
 use std::ascii::AsciiExt;
-use std::{
-    char,
-    collections::{BTreeSet, HashMap},
-    error, fmt, iter,
-    mem::replace,
-    ops::Deref,
-};
+use std::hash::BuildHasherDefault;
+use std::{char, collections::BTreeSet, error, fmt, iter, mem::replace, ops::Deref};
 
 use peresil::{self, ParseMaster, Recoverable, StringPoint};
+use seahash::SeaHasher;
 
 use self::Reference::*;
 
 use super::{dom, str::XmlStr, PrefixedName, QName};
+
+type HashMap<K, V> = std::collections::HashMap<K, V, BuildHasherDefault<SeaHasher>>;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 enum SpecificError {
@@ -927,7 +925,7 @@ impl<'d> DomBuilder<'d> {
         attributes.check_duplicates()?;
         let default_namespace = attributes.default_namespace()?;
 
-        let mut new_prefix_mappings = HashMap::new();
+        let mut new_prefix_mappings = HashMap::default();
         for ns in attributes.namespaces() {
             let value = AttributeValueBuilder::convert(&ns.values)?;
 

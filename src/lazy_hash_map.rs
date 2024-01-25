@@ -1,11 +1,12 @@
+use seahash::SeaHasher;
 use std::{
     borrow::Borrow,
     collections::{hash_map, HashMap},
-    hash::Hash,
+    hash::{BuildHasherDefault, Hash},
 };
 
 pub struct LazyHashMap<K, V> {
-    map: Option<HashMap<K, V>>,
+    map: Option<HashMap<K, V, BuildHasherDefault<SeaHasher>>>,
 }
 
 impl<K, V> LazyHashMap<K, V>
@@ -35,7 +36,7 @@ where
     pub fn insert(&mut self, key: K, val: V) -> Option<V> {
         self.map = match self.map.take() {
             Some(m) => Some(m),
-            None => Some(HashMap::new()),
+            None => Some(HashMap::default()),
         };
 
         self.map.as_mut().and_then(|m| m.insert(key, val))
